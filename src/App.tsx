@@ -1,25 +1,45 @@
 import { useState } from "react";
-import Alert from "./components/Alert";
-import Button from "./components/button";
-import Like from "./components/Like";
+import ExpenseList from "./expense-tracker/components/ExpenseList";
+import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
+import ExpenseForm from "./expense-tracker/components/ExpenseForm";
+import { categories } from "./expense-tracker/categories";
 
 function App() {
-  const [alertState, setAlertState] = useState(false);
-  return (
-    <div>
-      <Like buttonType="btn btn-link" onClick={() => console.log("Clicked")} />
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [expenses, setExpenses] = useState([
+    { id: 1, description: "aaa", amount: 10, category: "Utilities" },
+    { id: 2, description: "bbb", amount: 10, category: "Utilities" },
+    { id: 3, description: "ccc", amount: 10, category: "Utilities" },
+    { id: 4, description: "ddd", amount: 10, category: "Utilities" },
+  ]);
 
-      {alertState && (
-        <Alert onClose={() => setAlertState(false)} alertClass="alert">
-          Alert!
-        </Alert>
-      )}
-      <Button
-        buttonName="Button"
-        buttonType="btn btn-primary"
-        onClick={() => setAlertState(true)}
-      />
-    </div>
+  const visibleExpenses = selectedCategory
+    ? expenses.filter((e) => e.category === selectedCategory)
+    : expenses;
+
+  return (
+    <>
+      <div className="mb-3">
+        <ExpenseForm
+          onSubmit={(expense) =>
+            setExpenses([...expenses, { ...expense, id: expenses.length + 1 }])
+          }
+        />
+      </div>
+      <div className="mb-3">
+        <ExpenseFilter
+          onSelectCategory={(category) => setSelectedCategory(category)}
+        />
+      </div>
+
+      <div className="mb-3">
+        <ExpenseList
+          expenses={visibleExpenses}
+          onDelete={(id) => setExpenses(expenses.filter((e) => e.id !== id))}
+        />
+      </div>
+    </>
   );
 }
+
 export default App;
